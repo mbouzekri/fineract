@@ -31,6 +31,8 @@ import org.apache.fineract.portfolio.savings.data.SavingsAccountTransactionData;
 public interface SavingsAccountReadPlatformService {
 
     Page<SavingsAccountData> retrieveAll(SearchParameters searchParameters);
+    
+    Page<SavingsAccountData> retrieveAllBirthday(int monthOfBirth, int dayOfBirth);
 
     Collection<SavingsAccountData> retrieveAllForLookup(Long clientId);
 

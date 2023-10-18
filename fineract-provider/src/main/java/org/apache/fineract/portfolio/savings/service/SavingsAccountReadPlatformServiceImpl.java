@@ -241,6 +241,36 @@ public class SavingsAccountReadPlatformServiceImpl implements SavingsAccountRead
         return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), finalObjectArray, this.savingAccountMapper);
     }
 
+    //SQL query to list savings accounts by birthday
+    public Page<SavingsAccountData> retrieveAllBirthday(final int monthOfBirth, final int dayOfBirth) {
+
+        final AppUser currentUser = this.context.authenticatedUser();
+        final StringBuilder sqlBuilder = new StringBuilder(200);
+        sqlBuilder.append("select " + sqlGenerator.calcFoundRows() + " ");
+        sqlBuilder.append(this.savingAccountMapper.schema());
+
+        sqlBuilder.append(" join m_client clt on clt.id = sa.client_id");
+        sqlBuilder.append(" where 1=1");
+
+        final Object[] objectArray = new Object[2];
+        int arrayPos = 0;
+
+        if (monthOfBirth != 0) {
+            sqlBuilder.append(" and MONTH(clt.date_of_birth) = ?");
+            objectArray[arrayPos] = monthOfBirth;
+            arrayPos = arrayPos + 1;
+        }
+        
+        if (dayOfBirth != 0) {
+            sqlBuilder.append(" and DAY(clt.date_of_birth) = ?");
+            objectArray[arrayPos] = dayOfBirth;
+            arrayPos = arrayPos + 1;
+        }
+
+        final Object[] finalObjectArray = Arrays.copyOf(objectArray, arrayPos);
+        return this.paginationHelper.fetchPage(this.jdbcTemplate, sqlBuilder.toString(), finalObjectArray, this.savingAccountMapper);
+    }
+
     @Override
     public SavingsAccountData retrieveOne(final Long accountId) {
 

@@ -143,6 +143,27 @@ public class SavingsAccountsApiResource {
         return toApiJsonSerializer.serialize(settings, products, SavingsApiSetConstants.SAVINGS_ACCOUNT_RESPONSE_DATA_PARAMETERS);
     }
 
+    @GET
+    @Path("birthday")
+    @Consumes({ MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.APPLICATION_JSON })
+    @Operation(summary = "List savings accounts by birthday", description = "Lists savings applications/accounts\n\n"
+            + "Example Requests:\n savingsaccounts/birthday?monthOfBirth=12&dayOfBirth=8&tenantIdentifier=default")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK", content = @Content(schema = @Schema(implementation = SavingsAccountsApiResourceSwagger.GetSavingsAccountsResponse.class))) })
+    public String birthday(
+            @QueryParam("monthOfBirth") @Parameter(description = "monthOfBirth") final int monthOfBirth,
+            @QueryParam("dayOfBirth") @Parameter(description = "dayOfBirth") final int dayOfBirth,
+            @Context final UriInfo uriInfo) {
+        
+        context.authenticatedUser().validateHasReadPermission(SavingsApiConstants.SAVINGS_ACCOUNT_RESOURCE_NAME);
+
+        final Page<SavingsAccountData> products = savingsAccountReadPlatformService.retrieveAllBirthday(monthOfBirth, dayOfBirth);
+
+        final ApiRequestJsonSerializationSettings settings = apiRequestParameterHelper.process(uriInfo.getQueryParameters());
+        return toApiJsonSerializer.serialize(settings, products, SavingsApiSetConstants.SAVINGS_ACCOUNT_RESPONSE_DATA_PARAMETERS);
+    }
+
     @POST
     @Consumes({ MediaType.APPLICATION_JSON })
     @Produces({ MediaType.APPLICATION_JSON })
